@@ -1,0 +1,60 @@
+.env
+.env.testing
+.idea
+.php_cs.cache
+.phpunit.result.cache
+.vscode
+.vagrant
+*.hot
+/stubs
+/data
+/docker-compose-collection
+Homestead.json
+Homestead.yaml
+/ignorables/*
+/node_modules
+npm-debug.log
+package-lock.json
+/playwright-report
+/public/css
+/public/js
+/public/hot
+/public/storage
+/public/vendor
+/lang/vendor
+/storage/*.key
+/storage/dcc-data/
+/test-results
+/vendor
+yarn.lock
+yarn-error.log
+/test-results
+/playwright-report
+
+# B2B Business Documents - Sensitive Data
+/storage/app/business_documents/
+/storage/app/deleted_documents/
+
+# Additional Laravel sensitive files
+/storage/logs/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
+/bootstrap/cache/
+
+# Database
+*.sqlite
+*.sqlite-journal
+
+# Backup files
+*.bak
+*.backup
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
