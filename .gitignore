@@ -1,5 +1,7 @@
 .env
 .env.testing
+.env.backup
+.env.production
 .idea
 .php_cs.cache
 .phpunit.result.cache
@@ -42,6 +44,14 @@ yarn-error.log
 /storage/framework/views/
 /bootstrap/cache/
 
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+/public/build
+/storage/pail
+
 # Database
 *.sqlite
 *.sqlite-journal
@@ -49,6 +59,10 @@ yarn-error.log
 # Backup files
 *.bak
 *.backup
+
+# Additional files
+.phpactor.json
+auth.json
 
 # OS Files
 .DS_Store
