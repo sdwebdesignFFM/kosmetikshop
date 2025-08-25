@@ -377,6 +377,26 @@ class Product extends Model implements ProductContract
     }
 
     /**
+     * Get product URL with category path
+     *
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        // Get first category (excluding root category)
+        $category = $this->categories()
+            ->whereNotNull('parent_id')
+            ->first();
+
+        if ($category && strtolower($category->name) !== 'wurzel') {
+            return route('shop.product_or_category.index', $category->slug . '/' . $this->url_key);
+        }
+
+        // Fallback to product-only URL
+        return route('shop.product_or_category.index', $this->url_key);
+    }
+
+    /**
      * Get an attribute from the model.
      *
      * @param  string  $key

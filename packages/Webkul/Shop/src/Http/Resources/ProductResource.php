@@ -36,6 +36,7 @@ class ProductResource extends JsonResource
             'name'        => $this->name,
             'description' => $this->description,
             'url_key'     => $this->url_key,
+            'category_url' => $this->getCategoryUrlSafe(),
             'base_image'  => product_image()->getProductBaseImage($this),
             'images'      => product_image()->getGalleryImages($this),
             'is_new'      => (bool) $this->new,
@@ -56,5 +57,31 @@ class ProductResource extends JsonResource
                 'total'   => $this->reviewHelper->getTotalReviews($this),
             ],
         ];
+    }
+
+    /**
+     * Get product URL with category path (safe version)
+     *
+     * @return string
+     */
+    private function getCategoryUrlSafe()
+    {
+        try {
+            // Simple approach: check if product has loaded categories
+            if ($this->relationLoaded('categories') && $this->categories->count() > 0) {
+                $category = $this->categories->first(function($cat) {
+                    return $cat->parent_id !== null && strtolower($cat->name) !== 'wurzel';
+                });
+                
+                if ($category && isset($category->slug)) {
+                    return $category->slug . '/' . $this->url_key;
+                }
+            }
+        } catch (\Exception $e) {
+            // Silent fail - just use url_key
+        }
+
+        // Fallback to product-only URL
+        return $this->url_key;
     }
 }

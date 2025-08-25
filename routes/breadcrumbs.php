@@ -91,8 +91,34 @@ Breadcrumbs::for('compare', function (BreadcrumbTrail $trail) {
     $trail->push(trans('shop::app.compare.product-compare'), route('shop.compare.index'));
 });
 
-// Home > Product
+// Home > Category (with hierarchy)
+Breadcrumbs::for('category', function (BreadcrumbTrail $trail, $entity) {
+    $trail->parent('home');
+    
+    // Get ancestors and add them to trail (skip root category "Wurzel")
+    $ancestors = $entity->getAncestors();
+    foreach ($ancestors as $ancestor) {
+        // Skip root category (parent_id is null OR name is "Wurzel")
+        if ($ancestor->parent_id === null || strtolower($ancestor->name) === 'wurzel') {
+            continue;
+        }
+        $trail->push($ancestor->name, route('shop.product_or_category.index', $ancestor->slug));
+    }
+    
+    // Add current category with link
+    $trail->push($entity->name, route('shop.product_or_category.index', $entity->slug));
+});
+
+// Home > [Categories] > Product - FINAL VERSION
 Breadcrumbs::for('product', function (BreadcrumbTrail $trail, $entity) {
     $trail->parent('home');
-    $trail->push($entity->name ?? '', route('shop.product_or_category.index', $entity->url_key));
+    
+    $category = $entity->categories()->first();
+    
+    // Skip "Wurzel" completely and only add real categories
+    if ($category && $category->parent_id !== null && strtolower($category->name) !== 'wurzel') {
+        $trail->push($category->name, route('shop.product_or_category.index', $category->slug));
+    }
+    
+    $trail->push($entity->name ?? '');
 });

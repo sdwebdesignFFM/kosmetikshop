@@ -52,6 +52,14 @@ class ProductsCategoriesProxyController extends Controller
             return view('shop::home.index', compact('customizations'));
         }
 
+        // Check if URL contains category/product pattern
+        $urlParts = explode('/', $slugOrURLKey);
+        if (count($urlParts) == 2) {
+            // Format: category/product
+            [$categorySlug, $productSlug] = $urlParts;
+            return $this->handleCategoryProductURL($categorySlug, $productSlug);
+        }
+
         $category = $this->categoryRepository->findBySlug($slugOrURLKey);
 
         if ($category) {
@@ -82,6 +90,16 @@ class ProductsCategoriesProxyController extends Controller
                 || ! $product->status
             ) {
                 abort(404);
+            }
+
+            // Redirect direct product URL to category/product URL for SEO
+            $primaryCategory = $product->categories()
+                ->whereNotNull('parent_id')
+                ->first();
+                
+            if ($primaryCategory && strtolower($primaryCategory->name) !== 'wurzel') {
+                $canonicalUrl = $primaryCategory->slug . '/' . $product->url_key;
+                return redirect()->to($canonicalUrl, 301); // Permanent redirect for SEO
             }
 
             visitor()->visit($product);
@@ -129,5 +147,54 @@ class ProductsCategoriesProxyController extends Controller
         }
 
         abort(404);
+    }
+
+    /**
+     * Handle category/product URL pattern
+     */
+    private function handleCategoryProductURL($categorySlug, $productSlug)
+    {
+        // First, verify that the category exists
+        $category = $this->categoryRepository->findBySlug($categorySlug);
+        if (!$category) {
+            abort(404);
+        }
+
+        // Find the product by slug
+        $searchEngine = null;
+        if (core()->getConfigData('catalog.products.search.engine') == 'elastic') {
+            $searchEngine = core()->getConfigData('catalog.products.search.storefront_mode');
+        }
+
+        $product = $this->productRepository
+            ->setSearchEngine($searchEngine ?? 'database')
+            ->findBySlug($productSlug);
+
+        if (!$product) {
+            abort(404);
+        }
+
+        // Verify the product belongs to this category
+        $productCategories = $product->categories->pluck('slug')->toArray();
+        if (!in_array($categorySlug, $productCategories)) {
+            // Product exists but not in this category - redirect to first category
+            $firstCategory = $product->categories()->first();
+            if ($firstCategory && $firstCategory->slug !== 'wurzel') {
+                return redirect()->to($firstCategory->slug . '/' . $productSlug, 301);
+            }
+            // Fallback to product-only URL
+            return redirect()->to($productSlug, 301);
+        }
+
+        // Check product visibility and status
+        if (!$product->visible_individually
+            || !$product->status
+        ) {
+            abort(404);
+        }
+
+        visitor()->visit($product);
+
+        return view('shop::products.view', compact('product'));
     }
 }

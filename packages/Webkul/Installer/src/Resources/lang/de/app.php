@@ -320,7 +320,7 @@ return [
 
                 'offer-information' => [
                     'content' => [
-                        'title' => 'Bis zu 40% Rabatt auf Ihre erste Bestellung JETZT KAUFEN',
+                        'title' => 'Bis zu 20% Rabatt auf Ihre erste Bestellung JETZT KAUFEN',
                     ],
 
                     'name' => 'Angebotsinformation',

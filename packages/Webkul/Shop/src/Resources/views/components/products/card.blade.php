@@ -19,7 +19,7 @@
 
                 <!-- Product Image -->
                 <a
-                    :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`"
+                    :href="`{{ route('shop.product_or_category.index', '') }}/${product.category_url}`"
                     :aria-label="product.name + ' '"
                 >
                     <x-shop::media.images.lazy
@@ -196,7 +196,7 @@
 
                 {!! view_render_event('bagisto.shop.components.products.card.image.before') !!}
 
-                <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
+                <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.category_url}`">
                     <x-shop::media.images.lazy
                         class="after:content-[' '] relative min-w-[250px] bg-zinc-100 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105"
                         ::src="product.base_image.medium_image_url"

@@ -14,7 +14,7 @@
             aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.bagisto')"
         >
             <img
-                src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
+                src="{{ core()->getConfigData('general.design.admin_logo.logo_image') ? Storage::url(core()->getConfigData('general.design.admin_logo.logo_image')) : bagisto_asset('images/logo.svg') }}"
                 width="131"
                 height="29"
                 alt="{{ config('app.name') }}"
